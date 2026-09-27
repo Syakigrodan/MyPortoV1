@@ -172,7 +172,7 @@
 
         {{-- ============ RequestModal ============ --}}
         <div id="request-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Start a project">
-            <div class="modal-panel">
+            <div class="modal-panel" data-lenis-prevent>
                 <button class="modal-close" type="button" data-modal-close aria-label="Close">
                     <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-x"/></svg>
                 </button>

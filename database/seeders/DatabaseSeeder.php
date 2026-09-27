@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             SkillSeeder::class,
             ProjectSeeder::class,
             CertificateSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }

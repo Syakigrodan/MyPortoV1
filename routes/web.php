@@ -5,12 +5,14 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', PortfolioController::class)->name('home');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
 
 Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
 

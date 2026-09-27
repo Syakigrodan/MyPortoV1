@@ -607,6 +607,89 @@ function initTabs() {
 }
 
 /* ============================================================
+   Project bento: case-study modal
+   ============================================================ */
+function initProjectCards() {
+    const root = document.querySelector('[data-projects]');
+    if (!root) return;
+
+    /* modal */
+    const modal = document.getElementById('proj-modal');
+    if (!modal) return;
+    const panel = modal.querySelector('.proj-modal-panel');
+    const cache = { cat: null, number: null, title: null, desc: null, tech: [], features: [], challenge: null, url: null, github: null };
+
+    const escapeHtml = (str) =>
+        String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const fill = (card) => {
+        cache.cat = escapeHtml(card.dataset.categoryLabel);
+        cache.number = card.dataset.number || '';
+        cache.title = escapeHtml(card.dataset.title);
+        cache.desc = escapeHtml(card.dataset.desc);
+        cache.challenge = escapeHtml(card.dataset.challenge);
+        cache.url = card.dataset.url || '#';
+        cache.github = card.dataset.github || '';
+        try { cache.tech = JSON.parse(card.dataset.tech || '[]'); } catch (e) { cache.tech = []; }
+        try { cache.features = JSON.parse(card.dataset.highlights || '[]'); } catch (e) { cache.features = []; }
+
+        modal.querySelector('.proj-modal-cat').textContent = cache.cat;
+        modal.querySelector('.proj-modal-idx').textContent = cache.number ? `/${cache.number}` : '';
+        modal.querySelector('.proj-modal-title').textContent = cache.title;
+        modal.querySelector('.proj-modal-desc').textContent = cache.desc;
+        modal.querySelector('.proj-modal-challenge-text').textContent = cache.challenge;
+
+        const techBox = modal.querySelector('.proj-modal-tech');
+        techBox.innerHTML = cache.tech
+            .map((t) => `<span class="proj-tag">${escapeHtml(t)}</span>`)
+            .join('');
+
+        const featureBox = modal.querySelector('.proj-modal-features');
+        featureBox.innerHTML = cache.features
+            .map((f) => `<li><svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-check"/></svg><span>${escapeHtml(f)}</span></li>`)
+            .join('');
+
+        const ghLink = modal.querySelector('[data-project-github]');
+        ghLink.setAttribute('href', cache.github || '#');
+        ghLink.style.pointerEvents = cache.github ? '' : 'none';
+        ghLink.style.opacity = cache.github ? '' : '0.45';
+        modal.querySelector('[data-project-url]').setAttribute('href', cache.url);
+    };
+
+    const open = (card) => {
+        fill(card);
+        const body = modal.querySelector('.proj-modal-body');
+        if (body) body.scrollTop = 0;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        stopScroll();
+    };
+    const close = () => {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        startScroll();
+    };
+
+    root.querySelectorAll('[data-proj-open]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const card = btn.closest('.proj-card');
+            if (card) open(card);
+        });
+    });
+    modal.querySelectorAll('[data-proj-close]').forEach((btn) => {
+        btn.addEventListener('click', close);
+    });
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.classList.contains('proj-modal-backdrop')) close();
+    });
+    panel.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+    });
+}
+
+/* ============================================================
    Stats count-up (scroll progress based)
    ============================================================ */
 function initStats() {
@@ -838,6 +921,33 @@ function closeMenu() {
 }
 
 /* ============================================================
+   Guestbook avatar picker (photo preview + filename)
+   ============================================================ */
+function initAvatarPickers() {
+    document.querySelectorAll('[data-avatar-input]').forEach((input) => {
+        const picker = input.closest('.avatar-picker');
+        const preview = picker ? picker.querySelector('[data-avatar-preview]') : null;
+        const label = picker ? picker.querySelector('[data-avatar-name]') : null;
+
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            if (preview) {
+                preview.replaceChildren();
+                const img = document.createElement('img');
+                img.alt = '';
+                img.src = URL.createObjectURL(file);
+                img.addEventListener('load', () => URL.revokeObjectURL(img.src), { once: true });
+                preview.appendChild(img);
+            }
+
+            if (label) label.textContent = file.name;
+        });
+    });
+}
+
+/* ============================================================
    Anchor smooth scrolling + "View Work" etc.
    ============================================================ */
 function initAnchors() {
@@ -846,7 +956,7 @@ function initAnchors() {
         a.addEventListener('click', (e) => {
             const id = a.getAttribute('href').slice(1);
             if (!id) return;
-            if (a.hasAttribute('data-open-modal')) {
+            if (a.hasAttribute('data-open-modal') || a.hasAttribute('data-modal-open')) {
                 e.preventDefault();
                 openRequestModal();
                 return;
@@ -890,8 +1000,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initLiquidReveal(document.querySelector('.liquid-reveal'));
     initPlayer();
     initTabs();
+    initProjectCards();
     initStats();
     initNavMenu();
     initRequestModal();
     initAnchors();
+    initAvatarPickers();
 });

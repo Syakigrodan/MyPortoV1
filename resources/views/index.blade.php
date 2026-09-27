@@ -253,7 +253,13 @@
 
     {{-- ============ PORTFOLIO / WORKS ============ --}}
     <section id="portfolio" class="works-section">
+    {{-- Ambient warm glow (decorative, sits behind content) --}}
+    <div class="works-glow-layer" aria-hidden="true">
+        <span class="works-glow works-glow--amber"></span>
+        <span class="works-glow works-glow--ember"></span>
+    </div>
         <div class="shell" data-tabs>
+            <div class="works-bento reveal reveal-up">
             <div class="works-head">
                 <span class="works-eyebrow pill reveal"><span class="dot"></span> Portfolio</span>
                 <h2 class="works-h2">
@@ -268,42 +274,114 @@
             </div>
 
             {{-- Projects --}}
-            <div class="works-panel is-active" data-panel="projects" role="tabpanel">
+            <div class="works-panel is-active" data-panel="projects" role="tabpanel" data-projects>
                 @if ($projects->isNotEmpty())
-                    <ul class="works-grid">
+                    <div class="proj-grid">
                         @foreach ($projects as $index => $project)
                             @php
                                 $projectUrl = $project->link ?? $project->github ?? '#';
                                 $projectYear = $project->year ?? $project->created_at->year;
-                                $projectCategory = $project->category ?? 'Project';
+                                $number = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
+                                $palettes = [
+                                    ['--art-a:#3f3f46', '--art-b:#18181b'],
+                                    ['--art-a:#52525b', '--art-b:#1c1c20'],
+                                    ['--art-a:#44403c', '--art-b:#17171a'],
+                                ];
+                                $art = $palettes[$index % 3];
                             @endphp
-                            <li class="reveal reveal-up-lg" style="transition-delay:{{ $index * 90 }}ms">
-                                <a class="work-card" href="{{ $projectUrl }}" target="_blank" rel="noopener">
-                                    <div class="work-meta">
-                                        <span>{{ $projectCategory }} — {{ $projectYear }}</span>
-                                        <span class="work-badge" aria-hidden="true">
-                                            <svg style="width:1em;height:1em"><use href="#icon-arrow-up-right"/></svg>
+                            <article class="proj-card reveal reveal-up"
+                                     style="transition-delay:{{ $index * 80 }}ms; {{ implode(';', $art) }}"
+                                     data-title="{{ $project->title }}"
+                                     data-category-label="{{ $project->category }}"
+                                     data-number="{{ $number }}"
+                                     data-desc="{{ $project->description }}"
+                                     data-tech='{{ json_encode($project->tech_stack ?? []) }}'
+                                     data-highlights='{{ json_encode($project->highlights ?? []) }}'
+                                     data-challenge="{{ $project->challenge }}"
+                                     data-url="{{ $projectUrl }}"
+                                     data-github="{{ $project->github ?? '' }}">
+                                <button type="button" class="proj-media" data-proj-open aria-haspopup="dialog" aria-label="Lihat studi kasus {{ $project->title }}">
+                                    <span class="proj-art" aria-hidden="true">
+                                        <span class="proj-skeleton" aria-hidden="true"></span>
+                                    </span>
+                                    <span class="proj-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
+                                    <span class="proj-cat">{{ $project->category }}</span>
+                                    <span class="proj-idx" aria-hidden="true">/{{ $number }}</span>
+                                    <span class="proj-view" aria-hidden="true">
+                                        <span class="proj-view-label">
+                                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-folder"/></svg>
+                                            <span>Lihat Studi Kasus</span>
                                         </span>
-                                    </div>
-                                    <div class="work-watermark" aria-hidden="true">
-                                        <svg style="width:1em;height:1em"><use href="#icon-spark"/></svg>
-                                        <span class="reg">®</span>
-                                    </div>
-                                    <div class="work-body">
-                                        <h3 class="work-title">{{ $project->title }}</h3>
-                                        <p class="work-desc">{{ $project->description }}</p>
-                                        @if (!empty($project->tech_stack))
-                                            <div class="work-tags">
-                                                @foreach (array_slice($project->tech_stack, 0, 3) as $tech)
-                                                    <span class="tag-chip">{{ $tech }}</span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                </a>
-                            </li>
+                                    </span>
+                                </button>
+
+                                <div class="proj-body">
+                                    <h3 class="proj-title">{{ $project->title }}</h3>
+                                    <p class="proj-desc">{{ $project->description }}</p>
+                                    @if (!empty($project->tech_stack))
+                                        <ul class="proj-tags">
+                                            @foreach ($project->tech_stack as $tech)
+                                                <li class="proj-tag">{{ $tech }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                <div class="proj-foot">
+                                    <button type="button" class="proj-more" data-proj-open>
+                                        Detail & Fitur Utama
+                                        <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg>
+                                    </button>
+                                    @if (!empty($project->github))
+                                        <a class="proj-ghost-link" href="{{ $project->github }}" target="_blank" rel="noopener" aria-label="GitHub repository">
+                                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-github"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            </article>
                         @endforeach
-                    </ul>
+                    </div>
+
+                    {{-- Project case study modal --}}
+                    <div class="proj-modal" id="proj-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="proj-modal-title">
+                        <div class="proj-modal-backdrop" data-proj-close></div>
+                        <div class="proj-modal-panel" data-lenis-prevent>
+                            <button class="proj-modal-close" type="button" data-proj-close aria-label="Tutup">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-x"/></svg>
+                            </button>
+
+                            <div class="proj-modal-media">
+                                <span class="proj-art" aria-hidden="true">
+                                    <span class="proj-skeleton" aria-hidden="true"></span>
+                                </span>
+                                <span class="proj-chrome" aria-hidden="true"><i></i><i></i><i></i></span>
+                                <span class="proj-modal-idx" aria-hidden="true"></span>
+                            </div>
+
+                            <div class="proj-modal-body" data-lenis-prevent>
+                                <span class="proj-modal-cat"></span>
+                                <h3 class="proj-modal-title" id="proj-modal-title"></h3>
+                                <p class="proj-modal-desc"></p>
+
+                                <div class="proj-modal-tech"></div>
+
+                                <div class="proj-modal-bloc">
+                                    <h4 class="proj-modal-h4">SOROTAN &amp; FITUR UTAMA</h4>
+                                    <ul class="proj-modal-features"></ul>
+                                </div>
+
+                                <div class="proj-modal-bloc proj-modal-challenge">
+                                    <h4 class="proj-modal-h4">TANTANGAN KODE</h4>
+                                    <p class="proj-modal-challenge-text"></p>
+                                </div>
+
+                                <div class="proj-modal-actions">
+                                    <a class="proj-action proj-action--ghost" href="#" target="_blank" rel="noopener" data-project-github>💻 Kode GitHub</a>
+                                    <a class="proj-action proj-action--glow" href="#" target="_blank" rel="noopener" data-project-url>Demo Langsung <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <p class="modal-note">Projects coming soon.</p>
                 @endif
@@ -363,6 +441,7 @@
                     <p class="modal-note">Certificates coming soon.</p>
                 @endif
             </div>
+            </div>
         </div>
     </section>
 
@@ -385,6 +464,168 @@
                         </li>
                     @endforeach
                 </ul>
+            </div>
+        </div>
+    </section>
+    {{-- ============ CONTACT + GUESTBOOK ============ --}}
+    <section id="contact" class="connect-section">
+        <div class="connect-glow-layer" aria-hidden="true">
+            <span class="connect-glow connect-glow--warm"></span>
+        </div>
+
+        <div class="shell">
+            <div class="connect-grid">
+                {{-- ---------- Left: contact form + socials ---------- --}}
+                <div class="connect-col connect-col--left">
+                    <header class="connect-head">
+                        <span class="works-eyebrow pill reveal"><span class="dot"></span> {{ config('portfolio.contact.title') }}</span>
+                        <h2 class="connect-h2 reveal reveal-up">{{ config('portfolio.contact.headline') }}</h2>
+                        <p class="connect-sub reveal reveal-up" style="transition-delay:100ms">{{ config('portfolio.contact.subtitle') }}</p>
+                    </header>
+
+                    <form class="connect-card connect-form reveal reveal-up" style="transition-delay:160ms" action="{{ route('contact.send') }}" method="POST" novalidate>
+                        @csrf
+
+                        @if (session('success'))
+                            <p class="connect-alert connect-alert--ok">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-check"/></svg>
+                                {{ session('success') }}
+                            </p>
+                        @endif
+
+                        <div class="field">
+                            <label class="field-label" for="connect-name">{{ __('Name') }}</label>
+                            <span class="field-wrap">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-user"/></svg>
+                                <input class="field-control @error('name') is-invalid @enderror" id="connect-name" type="text" name="name" value="{{ old('name') }}" placeholder="Your name" autocomplete="name" required>
+                            </span>
+                            @error('name')<p class="field-error">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" for="connect-email">{{ __('Email') }}</label>
+                            <span class="field-wrap">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-mail"/></svg>
+                                <input class="field-control @error('email') is-invalid @enderror" id="connect-email" type="email" name="email" value="{{ old('email') }}" placeholder="you@company.com" autocomplete="email" required>
+                            </span>
+                            @error('email')<p class="field-error">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" for="connect-message">{{ __('Message') }}</label>
+                            <textarea class="field-control field-control--plain @error('message') is-invalid @enderror" id="connect-message" name="message" rows="4" placeholder="Tell me about your project, timeline, and budget." required>{{ old('message') }}</textarea>
+                            @error('message')<p class="field-error">{{ $message }}</p>@enderror
+                        </div>
+
+                        <button class="btn-send" type="submit">
+                            <span>{{ __('Kirim Pesan') }}</span>
+                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-send"/></svg>
+                        </button>
+                    </form>
+
+                    <div class="connect-card connect-socials reveal reveal-up" style="transition-delay:240ms">
+                        <div class="connect-card-head">
+                            <h3 class="connect-card-title">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-globe"/></svg>
+                                {{ config('portfolio.contact.socials_title') }}
+                            </h3>
+                        </div>
+                        <ul class="social-grid">
+                            @foreach (['linkedin' => 'LinkedIn', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'github' => 'GitHub', 'tiktok' => 'TikTok'] as $key => $label)
+                                @if (config("portfolio.socials.$key"))
+                                    <li>
+                                        <a class="social-item" href="{{ config("portfolio.socials.$key") }}" target="_blank" rel="noopener" aria-label="{{ $label }}" title="{{ $label }}">
+                                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-{{ $key }}"/></svg>
+                                            <span>{{ $label }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- ---------- Right: live comments / guestbook ---------- --}}
+                <div class="connect-col connect-col--right">
+                    <div class="connect-card connect-comments reveal reveal-up">
+                        <div class="connect-card-head">
+                            <h3 class="connect-card-title">
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-message"/></svg>
+                                {{ config('portfolio.contact.comments_title') }}
+                                <span class="comment-count">{{ $comments->count() }}</span>
+                            </h3>
+                            <p class="connect-card-note">{{ config('portfolio.contact.comments_hint') }}</p>
+                        </div>
+
+                        <form class="comment-form" action="{{ route('comments.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+                            @csrf
+
+                            <div class="field">
+                                <label class="field-label" for="comment-name">{{ __('Name') }}</label>
+                                <span class="field-wrap">
+                                    <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-user"/></svg>
+                                    <input class="field-control @error('name') is-invalid @enderror" id="comment-name" type="text" name="name" value="{{ old('name') }}" placeholder="Your name" autocomplete="name" required>
+                                </span>
+                                @error('name')<p class="field-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div class="field">
+                                <label class="field-label" for="comment-message">{{ __('Message') }}</label>
+                                <textarea class="field-control field-control--plain @error('message') is-invalid @enderror" id="comment-message" name="message" rows="3" placeholder="Write your comment here..." required>{{ old('message') }}</textarea>
+                                @error('message')<p class="field-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <label class="avatar-picker">
+                                <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" data-avatar-input>
+                                <span class="avatar-preview" data-avatar-preview>
+                                    <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-camera"/></svg>
+                                </span>
+                                <span class="avatar-picker-text">
+                                    <strong>{{ __('Choose Profile Photo') }}</strong>
+                                    <span data-avatar-name>{{ __('JPG, PNG, or WEBP · max 2 MB') }}</span>
+                                </span>
+                            </label>
+                            @error('avatar')<p class="field-error">{{ $message }}</p>@enderror
+
+                            <button class="btn-send" type="submit">
+                                <span>{{ __('Post Comment') }}</span>
+                                <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-message"/></svg>
+                            </button>
+                        </form>
+
+                        <ul class="comment-list">
+                            @forelse ($comments as $comment)
+                                <li class="comment-item @if ($comment->is_pinned) comment-item--pinned @endif">
+                                    <span class="comment-avatar">
+                                        @if ($comment->avatar_url)
+                                            <img src="{{ $comment->avatar_url }}" alt="{{ $comment->name }}" loading="lazy" width="44" height="44">
+                                        @else
+                                            <span aria-hidden="true">{{ $comment->initials }}</span>
+                                        @endif
+                                    </span>
+                                    <div class="comment-body">
+                                        <div class="comment-meta">
+                                            <span class="comment-name">{{ $comment->name }}</span>
+                                            @if ($comment->is_admin)
+                                                <span class="badge badge--admin">{{ __('Admin') }}</span>
+                                            @endif
+                                            @if ($comment->is_pinned)
+                                                <span class="badge badge--pinned">
+                                                    <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-star"/></svg>
+                                                    {{ __('Pinned Comment') }}
+                                                </span>
+                                            @endif
+                                            <time class="comment-date" datetime="{{ $comment->created_at->toDateString() }}">{{ $comment->created_at->locale('id')->diffForHumans() }}</time>
+                                        </div>
+                                        <p class="comment-text">{{ $comment->message }}</p>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="comment-empty">{{ __('Be the first to leave a comment.') }}</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

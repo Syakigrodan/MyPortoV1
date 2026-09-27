@@ -43,6 +43,17 @@ return [
         'twitter' => 'https://x.com/',
         'dribbble' => 'https://dribbble.com/',
         'instagram' => 'https://instagram.com/',
+        'youtube' => 'https://youtube.com/',
+        'tiktok' => 'https://tiktok.com/',
+    ],
+
+    'contact' => [
+        'title' => 'Hubungi Saya',
+        'headline' => 'Punya Ide Besar?',
+        'subtitle' => 'Punya pertanyaan? Kirimi saya pesan, dan saya akan segera membalasnya.',
+        'socials_title' => 'Connect With Me',
+        'comments_title' => 'Comments',
+        'comments_hint' => 'Tinggalkan jejak di guestbook — pesan Anda akan tampil di sini.',
     ],
 
     'hero' => [
