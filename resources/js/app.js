@@ -776,11 +776,8 @@ function initNavMenu() {
     menu.querySelectorAll('.navmenu-item').forEach((item) => {
         item.addEventListener('click', () => {
             closeMenu();
-            const action = item.getAttribute('data-action');
             const target = item.getAttribute('data-scroll');
-            if (action === 'contact') {
-                setTimeout(openRequestModal, 350);
-            } else if (target) {
+            if (target) {
                 setTimeout(() => scrollTo(target), 80);
             }
         });

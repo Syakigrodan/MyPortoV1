@@ -31,14 +31,16 @@ html { font-size: 16px; -webkit-font-smoothing: antialiased; }
     --radius-card-sm: 1.25rem;
     --radius-control: 0.875rem;
     --text-watermark: 13rem;
-    --container-shell: 88rem;
+    --container-shell: 104rem;
 }
 
 body {
     background: var(--background);
     color: var(--foreground);
     font-family: 'Onest', sans-serif;
-    overflow-x: hidden;
+    /* clip, not hidden: hides stray horizontal bleed without turning <body>
+       into a scroll container (which breaks sticky/fixed descendants). */
+    overflow-x: clip;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -60,12 +62,23 @@ img { display: block; }
 }
 .skip-link:focus-visible { transform: translateY(0); }
 
+/* Full-bleed wrappers: sections and backgrounds always span the viewport,
+   while .shell keeps the *content* column centred and proportional. */
+.hero, .about-section, .works-section, .connect-section, .stats-section, .site-footer { width: 100%; }
+
 .shell {
+    width: 100%;
     max-width: var(--container-shell);
     margin-inline: auto;
     padding-inline: 1.25rem;
 }
 @media (min-width: 640px) { .shell { padding-inline: 2rem; } }
+@media (min-width: 1024px) { .shell { padding-inline: 2.5rem; } }
+@media (min-width: 1440px) { .shell { padding-inline: 3rem; } }
+/* Ultra-wide: above the 1920px breakpoint the root font-size stops scaling,
+   so the rem cap would leave huge dead gutters. Switch to a fluid cap so the
+   layout keeps filling the screen instead of stranding the content mid-page. */
+@media (min-width: 1920px) { .shell { max-width: 88%; } }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -275,8 +288,6 @@ img { display: block; }
     display: flex; flex-direction: column; gap: 2rem;
     padding-block: 8rem 5rem;
 }
-.hero-grid.shell { padding-inline: 1.25rem; }
-@media (min-width: 640px) { .hero-grid.shell { padding-inline: 2rem; } }
 @media (min-width: 1024px) {
     .hero-grid {
         display: grid; grid-template-columns: repeat(12, 1fr); gap: 2.5rem;
@@ -580,7 +591,6 @@ img { display: block; }
     border-radius: var(--radius-pill); font-size: 0.875rem; font-weight: 500;
 }
 .pill-btn--dark .pill-inner { background: var(--ink); color: #fff; }
-.pill-btn--light .pill-inner { background: var(--surface); color: var(--foreground); }
 .pill-btn--outline .pill-inner { border: 1px solid var(--line); background: transparent; color: var(--foreground); }
 
 .pill-inner--arrow { padding: 0.375rem 0.375rem 0.375rem 1.5rem; }
@@ -592,7 +602,7 @@ img { display: block; }
     transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .pill-btn--dark .pill-badge { background: #fff; color: var(--ink); }
-.pill-btn--light .pill-badge, .pill-btn--outline .pill-badge { background: var(--ink); color: #fff; }
+.pill-btn--outline .pill-badge { background: var(--ink); color: #fff; }
 @media (hover: hover) {
     .pill-btn:hover .pill-badge--right { transform: translateX(3px); }
     .pill-btn:hover .pill-badge--up { transform: translate(2px, -2px); }
@@ -1394,64 +1404,14 @@ img { display: block; }
    Footer
    ============================================================ */
 .site-footer {
-    position: relative; overflow: hidden;
     border-radius: var(--radius-card) var(--radius-card) 0 0;
     background: var(--ink); color: #fff;
 }
-.footer-inner { position: relative; z-index: 10; padding-block: 5rem 2.5rem; }
+.footer-inner { padding-block: 3.5rem 2.25rem; }
 
-.footer-cta {
-    display: flex; flex-direction: column; gap: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 4rem;
-}
-@media (min-width: 1024px) {
-    .footer-cta { flex-direction: row; align-items: flex-end; justify-content: space-between; }
-}
-.footer-h2 {
-    max-width: 16ch; font-size: 2.25rem; font-weight: 600; letter-spacing: -0.02em;
-}
-@media (min-width: 640px) { .footer-h2 { font-size: 3rem; } }
-@media (min-width: 768px) { .footer-h2 { font-size: 3.75rem; } }
-
-.footer-columns {
-    display: grid; grid-template-columns: 1fr; gap: 3rem; padding-block: 4rem;
-}
-@media (min-width: 768px) { .footer-columns { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1024px) { .footer-columns { grid-template-columns: 2fr 1fr 1fr 1fr; } }
-
-.footer-brand-title {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-size: 1.125rem; font-weight: 600;
-}
-.footer-brand-title svg { font-size: 1.25rem; color: var(--accent-from); }
-.footer-tagline { margin-top: 1rem; max-width: 20rem; font-size: 0.875rem; color: rgba(255, 255, 255, 0.55); }
-
-.footer-col-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.025em; color: rgba(255, 255, 255, 0.4); margin-bottom: 1.25rem; }
-.footer-col ul { display: flex; flex-direction: column; gap: 0.75rem; }
-
-.animated-link { display: inline-flex; }
-.animated-link > span {
-    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease;
-    opacity: 0.65;
-}
-@media (hover: hover) { .animated-link:hover > span { transform: translateX(4px); opacity: 1; } }
-.footer-legal-links .animated-link > span { opacity: 0.7; }
-@media (hover: hover) { .footer-legal-links .animated-link:hover > span { transform: translateX(3px); opacity: 1; } }
-.footer-fw { font-size: 0.875rem; color: rgba(255, 255, 255, 0.55); }
-
-.footer-legal {
-    display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 2rem;
-    font-size: 0.75rem; color: rgba(255, 255, 255, 0.45);
-}
-@media (min-width: 640px) { .footer-legal { flex-direction: row; } }
-.footer-legal-links { display: flex; gap: 1.5rem; }
-
-.footer-watermark {
-    position: absolute; inset-inline: 0; bottom: -1.5rem; z-index: 0;
-    text-align: center; pointer-events: none; user-select: none;
-    font-weight: 700; line-height: 1; font-size: var(--text-watermark);
-    color: rgba(255, 255, 255, 0.05);
+.footer-copyright {
+    text-align: center; font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
 }
 
 /* ============================================================

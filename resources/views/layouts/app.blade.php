@@ -51,7 +51,7 @@
                         <li><a class="nav-item" href="#home" aria-current="page">Home</a></li>
                         <li><a class="nav-item" href="#about">About</a></li>
                         <li><a class="nav-item" href="#portfolio">Portfolio</a></li>
-                        <li><a class="nav-item" href="#contact" data-modal-open>Contact</a></li>
+                        <li><a class="nav-item" href="#contact">Contact</a></li>
                     </ul>
                 </nav>
 
@@ -79,67 +79,8 @@
         {{-- ============ Footer ============ --}}
         <footer class="site-footer">
             <div class="shell footer-inner">
-                <div class="footer-cta">
-                    <h2 class="footer-h2">
-                        <span class="reveal-line"><span>Have a project in mind?</span></span>
-                        <span class="reveal-line"><span>Let's get to work.</span></span>
-                    </h2>
-                    <div>
-                        <button class="pill-btn pill-btn--light" type="button" data-modal-open>
-                            <span class="pill-spring">
-                                <span class="pill-inner pill-inner--arrow">
-                                    Start a project
-                                    <span class="pill-badge pill-badge--up">
-                                        <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg>
-                                    </span>
-                                </span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="footer-columns">
-                    <div>
-                        <p class="footer-brand-title">
-                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-spark"/></svg>
-                            {{ config('portfolio.brand') }}
-                        </p>
-                        <p class="footer-tagline">{{ config('portfolio.tagline') }}</p>
-                    </div>
-
-                    <div class="footer-col">
-                        <p class="footer-col-title">Company</p>
-                        <ul>
-                            <li><a class="animated-link" href="#about"><span>About</span></a></li>
-                            <li><a class="animated-link" href="#portfolio"><span>Portfolio</span></a></li>
-                            <li><a class="animated-link" href="#contact" data-modal-open><span>Contact</span></a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col">
-                        <p class="footer-col-title">Social</p>
-                        <ul>
-                            @foreach (array_slice(config('portfolio.socials'), 0, 4) as $label => $url)
-                                <li>
-                                    <a class="animated-link" href="{{ $url }}" target="_blank" rel="noopener">
-                                        <span>{{ ucfirst($label) }}</span>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="footer-legal">
-                    <p>© {{ date('Y') }} {{ config('portfolio.name') }}. All rights reserved.</p>
-                    <div class="footer-legal-links">
-                        <a class="animated-link" href="#privacy"><span>Privacy</span></a>
-                        <a class="animated-link" href="#terms"><span>Terms</span></a>
-                        <a class="animated-link" href="#home"><span>Back to top ↑</span></a>
-                    </div>
-                </div>
+                <p class="footer-copyright">© {{ date('Y') }} {{ config('portfolio.name') }}. All rights reserved.</p>
             </div>
-            <div class="footer-watermark" aria-hidden="true">{{ strtoupper(config('portfolio.brand')) }}</div>
         </footer>
 
         {{-- ============ NavMenu overlay ============ --}}
@@ -160,7 +101,7 @@
                     <li><button class="navmenu-item" type="button" data-scroll="home"><span class="navmenu-index">01</span><span>Home</span></button></li>
                     <li><button class="navmenu-item" type="button" data-scroll="about"><span class="navmenu-index">02</span><span>About</span></button></li>
                     <li><button class="navmenu-item" type="button" data-scroll="portfolio"><span class="navmenu-index">03</span><span>Portfolio</span></button></li>
-                    <li><button class="navmenu-item" type="button" data-action="contact"><span class="navmenu-index">04</span><span>Contact</span></button></li>
+                    <li><button class="navmenu-item" type="button" data-scroll="contact"><span class="navmenu-index">04</span><span>Contact</span></button></li>
                 </ul>
             </nav>
 
