@@ -27,20 +27,20 @@
                 <p class="hero-bio hero-reveal reveal" style="transition-delay:580ms">{{ config('portfolio.tagline') }}</p>
 
                 <div class="cta-row hero-reveal reveal" style="transition-delay:660ms">
-                    <a class="pill-btn pill-btn--dark" href="#portfolio">
-                        <span class="pill-spring">
-                            <span class="pill-inner pill-inner--arrow">
-                                Explore Work
-                                <span class="pill-badge pill-badge--right">
-                                    <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
-                                </span>
-                            </span>
+                    <a class="cv-shimmer cv-shimmer--accent cv-shimmer--noswap hero-reveal reveal" style="transition-delay:660ms" href="#portfolio" aria-label="Explore Work">
+                        <span class="cv-shimmer-txt" aria-hidden="true">
+                            <span class="cv-shimmer-1">@foreach (str_split('Explore Work') as $ci => $ch)<span class="cv-letter" style="--d:{{ $ci * 0.04 }}s">{{ $ch === ' ' ? "\u{00A0}" : $ch }}</span>@endforeach</span>
+                        </span>
+                        <span class="cv-shimmer-trail" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><use href="#icon-arrow-right"/></svg>
                         </span>
                     </a>
-                    <a class="pill-btn pill-btn--outline" href="{{ config('portfolio.resume_url') }}" download>
-                        <span class="pill-spring">
-                            <span class="pill-inner pill-inner--plain">Download CV 📥</span>
+                    <a class="cv-shimmer cv-shimmer--ink hero-reveal reveal" style="transition-delay:740ms" href="{{ config('portfolio.resume_url') }}" download aria-label="Download CV">
+                        <span class="cv-shimmer-txt" aria-hidden="true">
+                            <span class="cv-shimmer-1">@foreach (str_split('Download CV') as $ci => $ch)<span class="cv-letter" style="--d:{{ $ci * 0.04 }}s">{{ $ch === ' ' ? "\u{00A0}" : $ch }}</span>@endforeach</span>
+                            <span class="cv-shimmer-2">@foreach (str_split('Downloading...') as $ci => $ch)<span class="cv-letter" style="--d:{{ $ci * 0.04 }}s">{{ $ch === ' ' ? "\u{00A0}" : $ch }}</span>@endforeach</span>
                         </span>
+                        <span class="cv-shimmer-emoji" aria-hidden="true">📥</span>
                     </a>
                 </div>
 
@@ -153,9 +153,12 @@
                             <span data-split-words>HAI, SAYA {{ strtoupper(config('portfolio.name')) }}.</span>
                         </h2>
                         <p class="bento-text reveal reveal-up" style="transition-delay:120ms">{{ config('portfolio.about_intro') }}</p>
-                        <a class="btn-capsule btn-capsule--dark reveal reveal-up" style="transition-delay:220ms" href="{{ config('portfolio.resume_url') }}" download>
-                            <span>Unduh CV Lengkap</span>
-                            <svg style="width:1em;height:1em" aria-hidden="true"><use href="#icon-download"/></svg>
+                        <a class="cv-shimmer reveal reveal-up" style="transition-delay:220ms" href="{{ config('portfolio.resume_url') }}" download aria-label="Unduh CV Lengkap">
+                            <svg class="cv-shimmer-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#icon-download"/></svg>
+                            <span class="cv-shimmer-txt" aria-hidden="true">
+                                <span class="cv-shimmer-1">@foreach (str_split('Unduh CV Lengkap') as $ci => $ch)<span class="cv-letter" style="--d:{{ $ci * 0.04 }}s">{{ $ch === ' ' ? "\u{00A0}" : $ch }}</span>@endforeach</span>
+                                <span class="cv-shimmer-2">@foreach (str_split('Mengunduh...') as $ci => $ch)<span class="cv-letter" style="--d:{{ $ci * 0.04 }}s">{{ $ch === ' ' ? "\u{00A0}" : $ch }}</span>@endforeach</span>
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -445,28 +448,6 @@
         </div>
     </section>
 
-    {{-- ============ STATS ============ --}}
-    <section class="stats-section">
-        <div class="shell">
-            <div class="stats-panel reveal reveal-up-lg reveal-scale" data-stats>
-                <p class="eyebrow eyebrow--light">By the numbers</p>
-                <h2 class="stats-h2">
-                    <span class="reveal-line"><span style="transition-delay:120ms">Proof in the work, not the words.</span></span>
-                </h2>
-
-                <ul class="stats-grid">
-                    @foreach ($stats as $index => $stat)
-                        <li class="stat-item" style="transition-delay:{{ $index * 90 }}ms">
-                            <p class="stat-number">
-                                <span class="stat-value" data-target="{{ $stat['value'] }}">0</span><span class="stat-suffix">{{ $stat['suffix'] }}</span>
-                            </p>
-                            <p class="stat-label">{{ $stat['label'] }}</p>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
-    </section>
     {{-- ============ CONTACT + GUESTBOOK ============ --}}
     <section id="contact" class="connect-section">
         <div class="connect-glow-layer" aria-hidden="true">

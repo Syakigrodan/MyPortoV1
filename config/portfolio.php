@@ -20,10 +20,13 @@ return [
         'gpa' => '3.81',
         'gpa_label' => 'Sangat Memuaskan',
     ],
+    // Also rendered as a plain grouped list in the "Tech Stack" bento card,
+    // so both stay in sync automatically. Shape (label => items) is relied
+    // upon by both consumers.
     'tech_stack' => [
-        'Bahasa Inti' => ['HTML5', 'CSS3', 'PHP', 'Java', 'JavaScript', 'SQL'],
-        'Frameworks & UI' => ['Laravel', 'Next.js', 'React', 'Tailwind', 'Bootstrap'],
-        'Tools & Ecosystem' => ['Vite', 'Git', 'Notion', 'GitHub', 'Figma', 'Postman'],
+      'Bahasa Inti' => ['HTML5', 'CSS3', 'PHP', 'Java', 'JavaScript', 'SQL'],
+      'Frameworks & UI' => ['Laravel', 'Next.js', 'React', 'Tailwind', 'Bootstrap'],
+      'Tools & Ecosystem' => ['Vite', 'Git', 'Notion', 'GitHub', 'Figma', 'Postman'],
     ],
     'focus' => [
         'title' => 'Fokus Saya',

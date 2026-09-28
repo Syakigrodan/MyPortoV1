@@ -492,7 +492,7 @@ function initPlayer() {
         };
 
         const showMeta = () => {
-            captionEl.textContent = isFinite(audio.duration) ? 'Now playing' : 'Loading track…';
+            captionEl.textContent = isFinite(audio.duration) ? 'Now playing' : 'Loading trackâ€¦';
             artistEl.textContent = tracks[index].artist || '';
             if (isFinite(audio.duration)) durationEl.textContent = formatTime(audio.duration);
         };
@@ -690,62 +690,6 @@ function initProjectCards() {
 }
 
 /* ============================================================
-   Stats count-up (scroll progress based)
-   ============================================================ */
-function initStats() {
-    const panel = document.querySelector('[data-stats]');
-    if (!panel || !('IntersectionObserver' in window)) return;
-
-    const items = panel.querySelectorAll('.stat-item');
-    const targets = Array.from(items).map((item) => {
-        const numEl = item.querySelector('.stat-value');
-        const value = parseFloat(numEl.getAttribute('data-target') || '0');
-        return { numEl, value };
-    });
-
-    let ticking = false;
-    let active = false;
-
-    const update = () => {
-        const rect = panel.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const start = vh - rect.top;         // element top hits viewport bottom
-        const end = vh / 2 - (rect.top + rect.height / 2); // center hits viewport center
-        let progress = 0;
-        if (end > 0) {
-            progress = 1;
-        } else if (start > 0) {
-            progress = start / (start - end);
-        }
-        progress = Math.max(0, Math.min(1, progress));
-        targets.forEach(({ numEl, value }) => {
-            numEl.textContent = Math.round(progress * value);
-        });
-        ticking = false;
-    };
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            ticking = true;
-            setTimeout(update, 30);
-        }
-    }, { passive: true });
-
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting && !active) {
-                active = true;
-                update();
-            } else if (!entry.isIntersecting) {
-                active = false;
-            }
-        });
-    }, { threshold: 0.1 });
-
-    io.observe(panel);
-}
-
-/* ============================================================
    NavMenu overlay
    ============================================================ */
 function initNavMenu() {
@@ -850,7 +794,7 @@ function initRequestModal() {
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.setAttribute('aria-busy', 'true');
-                if (submitLabel) submitLabel.textContent = 'Sending…';
+                if (submitLabel) submitLabel.textContent = 'Sendingâ€¦';
             }
 
             try {
@@ -907,7 +851,7 @@ function initRequestModal() {
 }
 
 /* ============================================================
-   Wait — share a closeMenu reference for modal escape
+   Wait â€” share a closeMenu reference for modal escape
    ============================================================ */
 function closeMenu() {
     const menu = document.getElementById('nav-menu-overlay');
@@ -972,6 +916,7 @@ function initAnchors() {
     });
 }
 
+
 /* ============================================================
    Init
    ============================================================ */
@@ -998,7 +943,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initPlayer();
     initTabs();
     initProjectCards();
-    initStats();
     initNavMenu();
     initRequestModal();
     initAnchors();

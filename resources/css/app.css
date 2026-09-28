@@ -1,5 +1,5 @@
 /* ============================================================
-   LUMORA — Design & Engineering Studio (public site)
+   LUMORA â€” Design & Engineering Studio (public site)
    Rem-based adaptive grid, pure CSS. Tailwind NOT used here.
    ============================================================ */
 
@@ -64,7 +64,7 @@ img { display: block; }
 
 /* Full-bleed wrappers: sections and backgrounds always span the viewport,
    while .shell keeps the *content* column centred and proportional. */
-.hero, .about-section, .works-section, .connect-section, .stats-section, .site-footer { width: 100%; }
+.hero, .about-section, .works-section, .connect-section, .site-footer { width: 100%; }
 
 .shell {
     width: 100%;
@@ -307,8 +307,6 @@ img { display: block; }
     content: ''; width: 0.375rem; height: 0.375rem; border-radius: var(--radius-pill);
     background: rgba(17, 17, 17, 0.5);
 }
-.eyebrow--light { color: rgba(255, 255, 255, 0.7); }
-.eyebrow--light::before { background: rgba(255, 255, 255, 0.6); }
 
 .hero-h1 {
     max-width: 18ch;
@@ -371,7 +369,7 @@ img { display: block; }
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 40px 80px -40px rgba(10, 10, 10, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
-/* ambient glow — asymmetric, blurred, decorative only */
+/* ambient glow â€” asymmetric, blurred, decorative only */
 .hero-visual::before, .hero-visual::after {
     content: ''; position: absolute; z-index: 0; border-radius: 50%;
     pointer-events: none;
@@ -572,8 +570,6 @@ img { display: block; }
 }
 .reveal.is-in { opacity: 1; transform: none; }
 .reveal-up { transform: translateY(28px); }
-.reveal-up-lg { transform: translateY(48px); }
-.reveal-scale { transform: scale(0.99); }
 .reveal-card { transform: translateY(16px) scale(0.96); }
 
 /* ============================================================
@@ -612,8 +608,11 @@ img { display: block; }
    About
    ============================================================ */
 .about-section { background: var(--background); }
-.about-section .shell { padding-block: 5rem 3rem; }
-@media (min-width: 1024px) { .about-section .shell { padding-block: 7rem 5rem; } }
+/* bottom half is deliberately symmetric with the top: the white gap between
+   this section and the dark works section is the only visible one on the page,
+   and it was 5.5rem/7.5rem against a 10rem/14rem standard everywhere else. */
+.about-section .shell { padding-block: 5rem 5rem; }
+@media (min-width: 1024px) { .about-section .shell { padding-block: 7rem 7rem; } }
 .about-eyebrow { text-align: center; }
 
 /* --- Bento grid --- */
@@ -714,6 +713,238 @@ img { display: block; }
     .btn-capsule--dark:hover { background: #27272a; border-color: rgba(255, 255, 255, 0.32); }
 }
 
+/* --- shimmer button on the "Unduh CV Lengkap" link ------------------------
+   Ported from a styled-components snippet. Four deliberate adaptations:
+   1. Every class is prefixed cv- so it cannot collide with the project's own
+      .btn-capsule / .btn-send / .tab-btn / .proj-more button styles.
+   2. The snippet's .btn-wrapper is dropped. It only existed because .btn had no
+      `position`, so ::before needed a positioned ancestor; putting
+      `position: relative` on the button itself gives identical geometry without
+      an extra node inside the link.
+   3. font-size, text-transform and letter-spacing are carried over from the old
+      .btn-capsule so the bio card keeps its current proportions.
+   4. The 13 hand-written :nth-child() delay rules are replaced by a --d custom
+      property set in the Blade loop, which scales to any label length. */
+.cv-shimmer {
+    --cv-r: 24px;
+    --cv-pad: 4px;
+    --cv-t: 0.4s;
+    --cv-color: #101010;
+    --cv-hue: 210deg;
+    --cv-blur: 0px;
+
+    position: relative;
+    user-select: none;
+    display: flex; justify-content: center; align-items: center;
+    padding: 0.5em 0.5em 0.5em 1.1em;
+    font-family: "Poppins", "Inter", "Segoe UI", sans-serif;
+    font-size: 0.85rem; font-weight: 400;
+    text-transform: uppercase; letter-spacing: 0.02em;
+    text-decoration: none;
+    background-color: var(--cv-color);
+    background-image: var(--cv-img, none);
+    backdrop-filter: blur(var(--cv-blur)) saturate(150%);
+    -webkit-backdrop-filter: blur(var(--cv-blur)) saturate(150%);
+    box-shadow:
+        /* inset */
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0 2px 2px rgba(255, 255, 255, 0.15),
+        inset 0 4px 4px rgba(255, 255, 255, 0.1),
+        inset 0 8px 8px rgba(255, 255, 255, 0.05),
+        inset 0 16px 16px rgba(255, 255, 255, 0.05),
+        /* drop */
+        0 -1px 1px rgba(0, 0, 0, 0.02),
+        0 -2px 2px rgba(0, 0, 0, 0.03),
+        0 -4px 4px rgba(0, 0, 0, 0.05),
+        0 -8px 8px rgba(0, 0, 0, 0.06),
+        0 -16px 16px rgba(0, 0, 0, 0.08);
+    border: solid 1px #fff2;
+    border-radius: var(--cv-r);
+    cursor: pointer;
+    transition: box-shadow var(--cv-t), border var(--cv-t), background-color var(--cv-t);
+}
+/* 4px halo around the button; z-index -1 puts it behind the opaque fill */
+.cv-shimmer::before {
+    content: "";
+    position: absolute;
+    top: calc(0px - var(--cv-pad));
+    left: calc(0px - var(--cv-pad));
+    width: calc(100% + var(--cv-pad) * 2);
+    height: calc(100% + var(--cv-pad) * 2);
+    border-radius: calc(var(--cv-r) + var(--cv-pad));
+    pointer-events: none;
+    background-image: linear-gradient(0deg, #0004, #000a);
+    z-index: -1;
+    transition: box-shadow var(--cv-t), filter var(--cv-t);
+    box-shadow:
+        0 -8px 8px -6px #0000 inset,
+        0 -16px 16px -8px #00000000 inset,
+        1px 1px 1px #fff2,
+        2px 2px 2px #fff1,
+        -1px -1px 1px #0002,
+        -2px -2px 2px #0001;
+}
+/* the travelling light sweep */
+.cv-shimmer::after {
+    content: "";
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: linear-gradient(
+        0deg,
+        #fff,
+        hsl(var(--cv-hue), 100%, 70%),
+        hsla(var(--cv-hue), 100%, 70%, 50%),
+        8%,
+        transparent
+    );
+    background-position: 0 0;
+    opacity: 0;
+    transition: opacity var(--cv-t), filter var(--cv-t);
+}
+.cv-shimmer-svg {
+    flex: none; height: 18px; width: 18px; margin-right: 0.5rem;
+    fill: #e8e8e8;
+    animation: cv-flicker 2s linear infinite; animation-delay: 0.5s;
+    filter: drop-shadow(0 0 2px #fff9);
+    transition: fill var(--cv-t), filter var(--cv-t), opacity var(--cv-t);
+}
+/* Trailing glyph slot, so each button keeps its own original icon instead of
+   sharing one. .cv-shimmer-trail is the circular badge, .cv-shimmer-emoji the
+   plain glyph (the hero Download CV shipped as an emoji, not an svg). */
+.cv-shimmer-trail {
+    display: grid; place-items: center; flex: none;
+    width: 1.75rem; height: 1.75rem; margin-left: 0.6rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #0a0a0a;
+    transition: transform var(--cv-t), background-color var(--cv-t);
+}
+.cv-shimmer-trail svg { width: 0.95em; height: 0.95em; }
+.cv-shimmer-emoji { flex: none; margin-left: 0.5rem; font-size: 0.95em; line-height: 1; }
+/* .cv-shimmer-1 stays in flow so it sizes the button; .cv-shimmer-2 overlays it */
+.cv-shimmer-txt { position: relative; display: inline-block; white-space: nowrap; }
+.cv-shimmer-1 { position: relative; animation: cv-appear 1s ease-in-out forwards; }
+.cv-shimmer-2 { position: absolute; top: 0; left: 0; opacity: 0; }
+.cv-letter {
+    position: relative; display: inline-block;
+    color: #fff5;
+    animation: cv-letter-anim 2s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+    transition: color var(--cv-t), text-shadow var(--cv-t), opacity var(--cv-t);
+}
+
+@keyframes cv-letter-anim { 50% { text-shadow: 0 0 3px #fff8; color: #fff; } }
+@keyframes cv-flicker     { 50% { opacity: 0.3; } }
+@keyframes cv-appear      { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes cv-opacity-anim { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes cv-focused-letter-anim {
+    0%, 100% { filter: blur(0px); }
+    50% {
+        transform: scale(2);
+        filter: blur(10px) brightness(150%)
+            drop-shadow(-36px 12px 12px hsl(var(--cv-hue), 100%, 70%));
+    }
+}
+
+/* Focus swaps the label and blows the letters apart */
+.cv-shimmer:focus { outline: none; }
+.cv-shimmer:focus .cv-shimmer-1 { animation: cv-opacity-anim 0.3s ease-in-out forwards; animation-delay: 1s; }
+.cv-shimmer:focus .cv-shimmer-2 { animation: cv-opacity-anim 0.3s ease-in-out reverse forwards; animation-delay: 1s; }
+.cv-shimmer:focus .cv-letter {
+    animation: cv-focused-letter-anim 1s ease-in-out forwards,
+               cv-letter-anim 1.2s ease-in-out infinite;
+    animation-delay: 0s, 1s;
+}
+.cv-shimmer:focus .cv-shimmer-svg { animation-duration: 1.2s; animation-delay: 0.2s; }
+.cv-shimmer:focus::before {
+    box-shadow:
+        0 -8px 12px -6px #fff3 inset,
+        0 -16px 16px -8px hsla(var(--cv-hue), 100%, 70%, 20%) inset,
+        1px 1px 1px #fff3,
+        2px 2px 2px #fff1,
+        -1px -1px 1px #0002,
+        -2px -2px 2px #0001;
+}
+.cv-shimmer:focus::after { opacity: 0.6; mask-image: linear-gradient(0deg, #fff, transparent); filter: brightness(100%); }
+
+@media (hover: hover) {
+    .cv-shimmer:hover { border: solid 1px hsla(var(--cv-hue), 100%, 80%, 40%); }
+    .cv-shimmer:hover::before {
+        box-shadow:
+            0 -8px 8px -6px #fffa inset,
+            0 -16px 16px -8px hsla(var(--cv-hue), 100%, 70%, 30%) inset,
+            1px 1px 1px #fff2,
+            2px 2px 2px #fff1,
+            -1px -1px 1px #0002,
+            -2px -2px 2px #0001;
+    }
+    .cv-shimmer:hover::after { opacity: 1; mask-image: linear-gradient(0deg, #fff, transparent); }
+    .cv-shimmer:hover .cv-shimmer-svg {
+        fill: #fff;
+        filter: drop-shadow(0 0 3px hsl(var(--cv-hue), 100%, 70%)) drop-shadow(0 -4px 6px #0009);
+        animation: none;
+    }
+}
+
+.cv-shimmer:active {
+    border: solid 1px hsla(var(--cv-hue), 100%, 80%, 70%);
+    /* opaque on press: fading toward the alpha resting fill would just undo the
+       press, and on glass a translucent press reads as a rendering glitch */
+    background-color: hsl(var(--cv-hue), 30%, 12%);
+    background-image: none;
+}
+.cv-shimmer:active::before {
+    box-shadow:
+        0 -8px 12px -6px #fffa inset,
+        0 -16px 16px -8px hsla(var(--cv-hue), 100%, 70%, 80%) inset,
+        1px 1px 1px #fff4,
+        2px 2px 2px #fff2,
+        -1px -1px 1px #0002,
+        -2px -2px 2px #0001;
+}
+.cv-shimmer:active::after { opacity: 1; mask-image: linear-gradient(0deg, #fff, transparent); filter: brightness(200%); }
+.cv-shimmer:active .cv-letter { text-shadow: 0 0 1px hsla(var(--cv-hue), 100%, 90%, 90%); animation: none; }
+
+/* --- variants -------------------------------------------------------------
+   Both hero CTAs sit on the light hero (--hero-to #c9c9c9), so the fills are
+   translucent ink with a backdrop blur rather than flat solid colour: the hero
+   gradient stays faintly visible through the glass instead of being blocked.
+
+   Alpha is not free here. White text on a translucent fill composites against
+   #c9c9c9, so the darker the glass, the higher the ratio. Measured over the
+   lightest part of the hero:
+     0.72 -> #494949 -> 9.1:1  (AAA)
+     0.55 -> #676767 -> 5.7:1  (AA)
+   Anything below ~0.5 drops under 4.5:1 at this 13.6px size, so 0.55 is the
+   floor for the lighter button.
+
+   The warm/cool hue split is kept so the two still read as a pair. */
+.cv-shimmer--accent {
+    --cv-color: rgba(23, 23, 26, 0.72);
+    --cv-hue: 25deg;
+    --cv-blur: 16px;
+}
+.cv-shimmer--ink {
+    --cv-color: rgba(23, 23, 26, 0.55);
+    --cv-hue: 210deg;
+    --cv-blur: 14px;
+}
+/* For labels that have no "in progress" wording (e.g. Explore Work). Without
+   this the focus rule below would fade the only text layer out to nothing. */
+.cv-shimmer--noswap:focus .cv-shimmer-1 { animation: none; opacity: 1; }
+
+/* keyboard users still need a ring once :focus drops the UA outline */
+.cv-shimmer:focus-visible { outline: 2px solid hsl(var(--cv-hue), 100%, 70%); outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .cv-shimmer .cv-letter, .cv-shimmer .cv-shimmer-svg, .cv-shimmer .cv-shimmer-1 {
+        animation: none !important;
+    }
+    .cv-shimmer .cv-shimmer-1 { opacity: 1; }
+}
+
 /* --- Photo card --- */
 .bento-card--photo { padding: 1.5rem; }
 .profile-card {
@@ -775,19 +1006,22 @@ img { display: block; }
 .bento-card--edu { gap: 1.25rem; }
 .edu-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .edu-icon {
-    width: 2.5rem; height: 2.5rem; display: grid; place-items: center;
+    width: 40px; height: 40px; display: grid; place-items: center;
     border-radius: var(--radius-pill); border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #e4e4e7; background: rgba(255, 255, 255, 0.06); font-size: 1.15rem;
+    color: #e4e4e7; background: rgba(255, 255, 255, 0.06); font-size: 18px;
 }
+/* px, not rem: the fluid root font in this stylesheet inflates rem by up to
+   1.78x between 400-640px viewports, which is what made these read oversized. */
 .chip {
     display: inline-block; align-self: flex-start;
-    padding: 0.4rem 0.9rem; border-radius: var(--radius-pill);
-    font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 5px 11px; border-radius: var(--radius-pill);
+    min-height: 22px; line-height: 1.2;
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
 }
 .chip--dark { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; border: 1px solid rgba(255, 255, 255, 0.14); }
 .chip--accent { background: var(--accent); color: #fff; }
 .chip--soft { background: rgba(255, 255, 255, 0.06); color: #d4d4d8; border: 1px solid rgba(255, 255, 255, 0.12); }
-.chip-list { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
 .edu-body { display: flex; flex-direction: column; gap: 0.25rem; }
 .edu-school {
     display: inline-flex; align-items: center; gap: 0.35rem;
@@ -796,8 +1030,8 @@ img { display: block; }
 }
 .edu-major { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; color: #fff; }
 @media (min-width: 640px) { .edu-major { font-size: 2rem; } }
-.edu-courses { display: flex; flex-direction: column; gap: 0.6rem; }
-.edu-courses-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.5); }
+.edu-courses { display: flex; flex-direction: column; gap: 6px; }
+.edu-courses-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.5); }
 .gpa-row {
     display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 1rem;
@@ -812,22 +1046,24 @@ img { display: block; }
 .bento-list-title { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; color: #fff; }
 .bento-list-sub { font-size: 0.85rem; color: #a3a3a3; }
 
-/* --- Tech stack card --- */
-.bento-card--stack { gap: 1.25rem; }
+/* --- Tech stack card ---
+   .stack-icon / .stack-group-label deliberately mirror .edu-icon and
+   .edu-courses-label so both bento cards share one visual rhythm. */
+.bento-card--stack { gap: 1.25rem; justify-content: space-between; }
 .stack-head { display: flex; align-items: center; gap: 0.65rem; }
 .stack-icon {
-    width: 2.25rem; height: 2.25rem; display: grid; place-items: center;
-    border-radius: var(--radius-control); background: rgba(255, 255, 255, 0.06); color: #e4e4e7;
-    font-size: 1rem; border: 1px solid rgba(255, 255, 255, 0.12);
+    width: 40px; height: 40px; display: grid; place-items: center;
+    border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.06); color: #e4e4e7;
+    font-size: 18px; border: 1px solid rgba(255, 255, 255, 0.12);
 }
-.stack-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.stack-group { display: flex; flex-direction: column; gap: 6px; }
 .stack-group-label {
-    font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
     color: rgba(255, 255, 255, 0.5);
 }
 
 /* ============================================================
-   Works (Portfolio) — tabs: Projects / Tech Stack / Certificates
+   Works (Portfolio) â€” tabs: Projects / Tech Stack / Certificates
    ============================================================ */
 .works-section {
     position: relative; overflow: hidden;
@@ -837,8 +1073,8 @@ img { display: block; }
 /* .shell is positioned with z-index:auto on purpose: it paints above the glow
    layer (tree order) WITHOUT creating a stacking context, so the fixed
    .proj-modal (z-index:90) still stacks above the fixed header (z-index:50). */
-.works-section .shell { position: relative; z-index: auto; padding-block: 2.5rem 5rem; }
-@media (min-width: 1024px) { .works-section .shell { padding-block: 2.5rem 7rem; } }
+.works-section .shell { position: relative; z-index: auto; padding-block: 5rem 5rem; }
+@media (min-width: 1024px) { .works-section .shell { padding-block: 7rem 7rem; } }
 
 /* --- ambient orange glow (asymmetric, blurred) --- */
 .works-glow-layer { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -866,7 +1102,7 @@ img { display: block; }
     to { transform: translate3d(2.5rem, -1.75rem, 0) scale(1.12); }
 }
 
-/* bento frame — single big card wrapping all panels */
+/* bento frame â€” single big card wrapping all panels */
 .works-bento {
     background: linear-gradient(170deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 28%), #0a0a0a;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -976,7 +1212,7 @@ img { display: block; }
     font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.85);
 }
 
-/* hover view pill — minimalist glassmorphism */
+/* hover view pill â€” minimalist glassmorphism */
 .proj-view {
     position: absolute; inset: 0; z-index: 4;
     display: flex; align-items: center; justify-content: center;
@@ -1096,7 +1332,7 @@ img { display: block; }
     scrollbar-width: thin;
     scrollbar-color: #3f3f46 transparent;
 }
-/* children must not be squeezed — flex-shrink made them overlap on mobile */
+/* children must not be squeezed â€” flex-shrink made them overlap on mobile */
 .proj-modal-body > *, .proj-modal-bloc > * { flex: 0 0 auto; }
 .proj-modal-body::-webkit-scrollbar { width: 8px; }
 .proj-modal-body::-webkit-scrollbar-track { background: transparent; }
@@ -1202,12 +1438,16 @@ img { display: block; }
 @media (hover: hover) { .cert-verify:hover span { opacity: 1; } }
 
 /* ============================================================
-   Connect (Contact form + Guestbook) — two column
+   Connect (Contact form + Guestbook) â€” two column
    ============================================================ */
 .connect-section {
     position: relative; overflow: hidden;
     background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 55%), var(--ink);
     color: #fff;
+    /* This section and the works section above it are both var(--ink), so the
+       10rem gap between them is invisible. This hairline makes the boundary
+       read, matching the 0.12 white hairline used on the other dark surfaces. */
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 .connect-section .shell { position: relative; z-index: auto; padding-block: 5rem 4rem; }
 @media (min-width: 1024px) { .connect-section .shell { padding-block: 7rem 6rem; } }
@@ -1368,43 +1608,12 @@ img { display: block; }
 .comment-empty { padding: 1.5rem 0; font-size: 0.875rem; color: rgba(255, 255, 255, 0.5); text-align: center; }
 
 /* ============================================================
-   Stats
-   ============================================================ */
-.stats-section { background: var(--background); }
-.stats-section .shell { padding-block: 0 5rem; }
-@media (min-width: 1024px) { .stats-section .shell { padding-block: 0 7rem; } }
-.stats-panel {
-    border-radius: var(--radius-card); background: var(--ink);
-    padding: 3rem 1.5rem; color: #fff;
-}
-@media (min-width: 640px) { .stats-panel { padding: 4rem 2rem; } }
-@media (min-width: 768px) { .stats-panel { padding-inline: 4rem; } }
-
-.stats-h2 {
-    margin-top: 1rem; max-width: 20ch;
-    font-size: 1.875rem; font-weight: 500; letter-spacing: -0.01em;
-}
-@media (min-width: 768px) { .stats-h2 { font-size: 2.25rem; } }
-
-.stats-grid {
-    margin-top: 3.5rem;
-    display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 2rem; row-gap: 3rem;
-}
-@media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-
-.stat-number {
-    font-size: 3rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
-}
-@media (min-width: 640px) { .stat-number { font-size: 3.75rem; } }
-@media (min-width: 768px) { .stat-number { font-size: 4.5rem; } }
-.stat-suffix { font-weight: 400; color: rgba(255, 255, 255, 0.55); }
-.stat-label { margin-top: 0.75rem; font-size: 0.875rem; color: rgba(255, 255, 255, 0.55); }
-
-/* ============================================================
    Footer
    ============================================================ */
+/* Full-bleed: square corners so the dark background reaches every screen
+   edge. Rounded top corners left white notches against the section above. */
 .site-footer {
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    width: 100%;
     background: var(--ink); color: #fff;
 }
 .footer-inner { padding-block: 3.5rem 2.25rem; }
